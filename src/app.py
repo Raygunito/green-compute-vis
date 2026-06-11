@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import altair as alt
-import json
+from pathlib import Path
 
 # ── Configuration ────────────────────────────────────────────────────────────
 
@@ -11,49 +11,15 @@ st.set_page_config(
     layout="wide",
 )
 
-st.markdown(
-    """
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
 
-  html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
+def load_css() -> None:
+    """Load custom CSS from src/style.css and inject into the Streamlit app."""
+    css_path = Path(__file__).resolve().parent / "style.css"
+    with open(css_path, encoding="utf-8") as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-  .main-title {
-    font-size: 2rem; font-weight: 700; letter-spacing: -0.03em;
-    margin-bottom: 0.15rem;
-  }
-  .sub-title {
-    font-size: 1rem; font-weight: 300; color: #94a3b8; margin-bottom: 2rem;
-  }
-  .kpi-block {
-    border: 1px solid rgba(148,163,184,0.2); border-radius: 10px;
-    padding: 1.1rem 1.4rem;
-  }
-  .kpi-value {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 1.8rem; font-weight: 600; line-height: 1;
-  }
-  .kpi-label {
-    font-size: 0.75rem; font-weight: 400; color: #94a3b8;
-    text-transform: uppercase; letter-spacing: 0.07em; margin-top: 0.3rem;
-  }
-  .kpi-delta { font-size: 0.8rem; color: #4ade80; margin-top: 0.2rem; }
-  .section-title {
-    font-size: 1.05rem; font-weight: 600;
-    margin: 1.8rem 0 0.3rem 0;
-  }
-  .section-sub {
-    font-size: 0.82rem; color: #94a3b8; margin-bottom: 0.8rem;
-  }
-  .selection-hint {
-    background: rgba(59,130,246,0.1); border-left: 3px solid #3b82f6;
-    padding: 0.6rem 1rem; border-radius: 0 6px 6px 0;
-    font-size: 0.82rem; color: #3b82f6; margin-bottom: 1rem;
-  }
-</style>
-""",
-    unsafe_allow_html=True,
-)
+
+load_css()
 
 # ── Normalisation pays ────────────────────────────────────────────────────────
 
@@ -248,6 +214,15 @@ st.markdown(
 )
 st.markdown(
     '<div class="sub-title">Refroidissement, énergie et eau : les arbitrages derrière chaque data center</div>',
+    unsafe_allow_html=True,
+)
+
+st.markdown(
+    '<div class="research-question">'
+    "Le choix du système de refroidissement détermine-t-il à lui seul "
+    "l'efficacité énergétique et hydrique d'un data center "
+    "et où dans le monde ces arbitrages se manifestent-ils ?"
+    "</div>",
     unsafe_allow_html=True,
 )
 

@@ -1,0 +1,106 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Custom styles for Data Centers Mondiaux — Streamlit App
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+html, body, [class*="css"] {
+    font-family: 'Inter', sans-serif;
+}
+
+/* ── Typography ─────────────────────────────────────────────────────────── */
+
+.main-title {
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    margin-bottom: 0.15rem;
+}
+
+.sub-title {
+    font-size: 1rem;
+    font-weight: 300;
+    color: #94a3b8;
+    margin-bottom: 2rem;
+}
+
+.section-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin: 1.8rem 0 0.3rem 0;
+}
+
+.section-sub {
+    font-size: 0.82rem;
+    color: #94a3b8;
+    margin-bottom: 0.8rem;
+}
+
+/* ── KPI Cards ──────────────────────────────────────────────────────────── */
+
+.kpi-block {
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 10px;
+    padding: 1.1rem 1.4rem;
+}
+
+.kpi-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.8rem;
+    font-weight: 600;
+    line-height: 1;
+}
+
+.kpi-label {
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-top: 0.3rem;
+}
+
+.kpi-delta {
+    font-size: 0.8rem;
+    color: #4ade80;
+    margin-top: 0.2rem;
+}
+
+/* ── Selection Hint ─────────────────────────────────────────────────────── */
+
+.selection-hint {
+    background: rgba(59, 130, 246, 0.1);
+    border-left: 3px solid #3b82f6;
+    padding: 0.6rem 1rem;
+    border-radius: 0 6px 6px 0;
+    font-size: 0.82rem;
+    color: #3b82f6;
+    margin-bottom: 1rem;
+}
+
+/* ── Research Question ──────────────────────────────────────────────────── */
+
+.research-question {
+    font-size: 1.15rem;
+    font-weight: 500;
+    font-style: italic;
+    color: #e2e8f0;
+    line-height: 1.6;
+    margin: 1.2rem 0 1.8rem 0;
+    padding: 1rem 1.4rem;
+    background: rgba(148, 163, 184, 0.08);
+    border-radius: 8px;
+    border: 1px solid rgba(148, 163, 184, 0.15);
+}
+
+.research-question::before {
+    content: "🔬 Problématique  ";
+    font-style: normal;
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #94a3b8;
+    display: block;
+    margin-bottom: 0.5rem;
+}
