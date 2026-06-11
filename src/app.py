@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import altair as alt
 from pathlib import Path
+import kagglehub
+
 
 # ── Configuration ────────────────────────────────────────────────────────────
 
@@ -148,7 +150,9 @@ COUNTRY_COORDS = {
 
 @st.cache_data
 def load_data():
-    df = pd.read_csv("data/data_center_hybrid.csv")
+    path = kagglehub.dataset_download("ashyou09/global-data-center-and-ai-waterelectricity-usage", output_dir="data")
+
+    df = pd.read_csv(path + "/data_center_hybrid.csv")
 
     # Normaliser les noms de pays
     df["Country"] = df["Country"].replace(COUNTRY_NORMALIZE)
