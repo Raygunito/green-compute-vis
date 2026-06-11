@@ -621,6 +621,13 @@ st.markdown("---")
 st.markdown(
     "<div style='font-size:0.75rem;color:#94a3b8;text-align:center;'>"
     "Master 2 IASD — Université Paris-Dauphine · Cours de Visualisation de Données · 2025"
+    "<br>"
+    "Données : "
+    "<a href='https://www.kaggle.com/datasets/ashyou09/global-data-center-and-ai-waterelectricity-usage' "
+    "target='_blank' style='color:#64748b;text-decoration:none;border-bottom:1px dotted #475569;'>"
+    "Global Data Center & AI Water/Electricity Usage (Kaggle)"
+    "</a> · "
+    "<span style='color:#475569;'>Métriques opérationnelles synthétiques, à but éducatif</span>"
     "</div>",
     unsafe_allow_html=True,
 )
