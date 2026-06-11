@@ -314,7 +314,7 @@ heatmap_data["tooltip_facilities"] = heatmap_data["n_facilities"].map(
 )
 
 # Ordre des axes — meilleurs PUE/WUE en bas, pires en haut (cohérence avec légende vert bas / rouge haut)
-cooling_order = ["Air Cooled", "Liquid Cooled", "Evaporative"]
+cooling_order = ["Liquid Cooled", "Air Cooled", "Evaporative"]
 facility_order = ["Enterprise/Standard", "Colocation", "Hyperscale/AI"]
 
 # Sélection interactive
