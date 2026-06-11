@@ -302,21 +302,24 @@ with k4:
 
 st.markdown("<br>", unsafe_allow_html=True)
 
+with st.expander("📖 Définitions PUE & WUE"):
+    col_def1, col_def2 = st.columns(2)
+    with col_def1:
+        st.markdown(
+            "**PUE — Power Usage Effectiveness**  \n"
+            "Ratio entre l'énergie totale consommée par le data center et l'énergie "
+            "effectivement utilisée par les serveurs. "
+        )
+    with col_def2:
+        st.markdown(
+            "**WUE — Water Usage Effectiveness**  \n"
+            "Volume d'eau consommé (en litres) pour produire 1 kWh d'énergie utile aux serveurs. "
+        )
+
 # ── Section Focus Chart ───────────────────────────────────────────────────────
 
 st.markdown(
     '<div class="section-title">Efficacité énergétique × hydrique par combinaison de refroidissement</div>',
-    unsafe_allow_html=True,
-)
-st.markdown(
-    '<div class="section-sub">'
-    "Chaque cellule = une combinaison Refroidissement × Type de facility. "
-    "<b>Couleur</b> = PUE moyen (vert = efficace). <b>Texte</b> = WUE médian en L/kWh."
-    "</div>",
-    unsafe_allow_html=True,
-)
-st.markdown(
-    '<div class="selection-hint">👆 Cliquez sur une cellule pour explorer la distribution géographique de ce groupe sur la carte ci-dessous</div>',
     unsafe_allow_html=True,
 )
 
@@ -340,7 +343,9 @@ cooling_order = ["Air Cooled", "Liquid Cooled", "Evaporative"]
 facility_order = ["Enterprise/Standard", "Colocation", "Hyperscale/AI"]
 
 # Sélection interactive
-selection = alt.selection_point(fields=["Cooling_System_Type", "Facility_Type"])
+selection = alt.selection_point(
+    fields=["Cooling_System_Type", "Facility_Type"], toggle=False
+)
 
 # Rectangles (fond coloré par PUE)
 rect = (
@@ -452,12 +457,14 @@ if event and event.get("selection") and event["selection"].get("param_1"):
     if sel:
         selected_cooling_val = sel[0].get("Cooling_System_Type")
         selected_facility_val = sel[0].get("Facility_Type")
+    else:
+        selected_cooling_val = None
+        selected_facility_val = None
 
 if selected_cooling_val and selected_facility_val:
     st.markdown(
         f'<div class="section-sub">'
-        f"Sélection : <b>{selected_cooling_val}</b> × <b>{selected_facility_val}</b> — "
-        f"couleur = niveau de stress hydrique, taille = capacité installée (MW)"
+        f"Sélection : <b>{selected_cooling_val}</b> × <b>{selected_facility_val}</b> "
         f"</div>",
         unsafe_allow_html=True,
     )
@@ -552,21 +559,82 @@ if selected_cooling_val and selected_facility_val:
 
 else:
     st.markdown(
-        '<div class="section-sub" style="color:#94a3b8;font-style:italic;">'
-        "Cliquez sur une cellule de la heatmap pour afficher la carte correspondante."
-        "</div>",
+        '<div class="section-sub">Tous les data centers</div>',
         unsafe_allow_html=True,
     )
-    # Carte monde vide comme placeholder
+    map_df = dff[dff["lat"].notna()].copy()
+    map_agg = (
+        map_df.groupby(["Country", "lat", "lon"])
+        .agg(
+            n_facilities=("Facility_ID", "nunique"),
+            PUE_mean=("PUE", "mean"),
+            WUE_median=("WUE_L_per_kWh", "median"),
+            capacity_total=("Estimated_Capacity_MW", "sum"),
+            Surrounding_Water_Stress_Tier=(
+                "Surrounding_Water_Stress_Tier",
+                lambda x: x.value_counts().idxmax(),
+            ),
+        )
+        .reset_index()
+    )
     world_url = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json"
     background = (
         alt.Chart(alt.topo_feature(world_url, "countries"))
         .mark_geoshape(fill="#2d3348", stroke="#1e2130", strokeWidth=0.5)
         .project("naturalEarth1")
-        .properties(width=900, height=400, background="transparent")
-        .configure_view(strokeWidth=0, fill="transparent")
     )
-    st.altair_chart(background, use_container_width=True)
+    stress_color = alt.Color(
+        "Surrounding_Water_Stress_Tier:N",
+        scale=alt.Scale(
+            domain=["Low", "Medium", "High"],
+            range=["#4ade80", "#f59e0b", "#f87171"],
+        ),
+        legend=alt.Legend(
+            title="Stress hydrique",
+            titleFontSize=11,
+            titleColor="#94a3b8",
+            labelFontSize=10,
+            labelColor="#94a3b8",
+            orient="bottom-right",
+        ),
+    )
+    points = (
+        alt.Chart(map_agg)
+        .mark_circle(opacity=0.75, stroke="white", strokeWidth=0.8)
+        .encode(
+            longitude="lon:Q",
+            latitude="lat:Q",
+            size=alt.Size(
+                "capacity_total:Q",
+                scale=alt.Scale(range=[40, 800]),
+                legend=alt.Legend(
+                    title="Capacité totale (MW)",
+                    titleFontSize=11,
+                    labelFontSize=10,
+                    orient="bottom-left",
+                ),
+            ),
+            color=stress_color,
+            tooltip=[
+                alt.Tooltip("Country:N", title="Pays"),
+                alt.Tooltip("n_facilities:Q", title="Nb facilities"),
+                alt.Tooltip("PUE_mean:Q", title="PUE moyen", format=".3f"),
+                alt.Tooltip("WUE_median:Q", title="WUE médian (L/kWh)", format=".3f"),
+                alt.Tooltip(
+                    "capacity_total:Q", title="Capacité totale (MW)", format=",.0f"
+                ),
+                alt.Tooltip("Surrounding_Water_Stress_Tier:N", title="Stress hydrique"),
+            ],
+        )
+        .project("naturalEarth1")
+    )
+    map_chart = (
+        (background + points)
+        .properties(width=900, height=440, background="transparent")
+        .configure_view(strokeWidth=0, fill="transparent")
+        .configure_legend(labelColor="#94a3b8", titleColor="#94a3b8")
+    )
+    st.altair_chart(map_chart, use_container_width=True)
 
 # ── Footer ────────────────────────────────────────────────────────────────────
 
